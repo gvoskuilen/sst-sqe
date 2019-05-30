@@ -34,6 +34,9 @@ L_TESTFILE=()  # Empty list, used to hold test file names
 
 #===============================================================================
 #                     Set up
+if [ $USER == "jpvandy" ] ; then
+     preFail  " Vandyke can't fetch tar"
+fi
 
     ls -d $SST_TEST_SUITES/testCramSim > /dev/null 2>&1
     Ret_Val=$?
