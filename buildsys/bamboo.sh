@@ -282,9 +282,9 @@ if [ ! -d ../../distTestDir ] ; then
    do
       date
       echo " "
-      echo "     TimeoutEx -t 90 git clone ${_DEPTH_} https://github.com/simulator/sst-gpgpusim.git src/sst/elements/Gpgpusim "
+      echo "     TimeoutEx -t 90 git clone ${_DEPTH_} -b https://github.com/simulator/sst-gpgpusim.git src/sst/elements/Gpgpusim "
       date
-      TimeoutEx -t 90 git clone ${_DEPTH_} https://github.com/simulator/sst-gpgpusim.git src/sst/elements/Gpgpusim "
+      TimeoutEx -t 90 git clone ${_DEPTH_} -b https://github.com/simulator/sst-gpgpusim.git src/sst/elements/Gpgpusim
       retVal=$?
       date
       if [ $retVal == 0 ] ; then
