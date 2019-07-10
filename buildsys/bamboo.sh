@@ -276,6 +276,48 @@ if [ ! -d ../../distTestDir ] ; then
        fi
    fi
 
+## Cloning Gpgpu into <path>/devel/trunk     #################
+   Num_Tries_remaing=3
+   while [ $Num_Tries_remaing -gt 0 ]
+   do
+      date
+      echo " "
+      echo "     TimeoutEx -t 90 git clone ${_DEPTH_} https://github.com/simulator/sst-gpgpusim.git src/sst/elements/Gpgpusim "
+      date
+      TimeoutEx -t 90 git clone ${_DEPTH_} https://github.com/simulator/sst-gpgpusim.git src/sst/elements/Gpgpusim "
+      retVal=$?
+      date
+      if [ $retVal == 0 ] ; then
+         Num_Tries_remaing=-1
+      else
+         echo "\"git clone of https://github.com/sstsimulator/juno.git \" FAILED.  retVal = $retVal"
+         Num_Tries_remaing=$(($Num_Tries_remaing - 1))
+         if [ $Num_Tries_remaing -gt 0 ] ; then
+             echo "    ------   RETRYING    $Num_Tries_remaing "
+             rm -rf juno
+             continue
+         fi
+ 
+         exit
+      fi
+   done
+   echo " "
+   echo " The juno Repo has been cloned."
+   ls -l
+   pushd juno
+
+   # Test for override of the branch to some other SHA1 
+   if [[ ${SST_JUNO_RESET:+isSet} == isSet ]] ; then
+       echo "     Desired JUNO SHA1 is ${SST_JUNO_RESET}"
+       git reset --hard ${SST_JUNO_RESET}
+       retVal=$?
+       if [ $retVal != 0 ] ; then
+          echo "\"git reset --hard ${SST_JUNO_RESET} \" FAILED.  retVal = $retVal"
+          exit
+       fi
+   fi
+#####################   end clone    Gpgpu
+
    git log -n 1 | grep commit
    ls -l
    popd
