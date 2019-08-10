@@ -57,6 +57,9 @@ L_TESTFILE=()  # Empty list, used to hold test file names
 # Caveats:
 #
 #-------------------------------------------------------------------------------
+echo '####################  MULTI    ############################################'
+env | grep MULTI
+
 ##    if [[ ${SST_MULTI_THREAD_COUNT:+isSet} == isSet ]] && [ ${SST_MULTI_THREAD_COUNT} -gt 1 ] ; then
 ##         echo '           SKIP '
 ##         preFail " Partition tests are multi-rank, hence, do not work with threading" "skip"
