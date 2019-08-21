@@ -3301,7 +3301,8 @@ else
             SST_DIST_BOOST=$3
             SST_DIST_PARAM4=$4
 echo "###################### \$2 $2 , \$3 $3 , \$5 $5 "
-            SST_DIST_CUDA=`echo $5 | sed 's/cuda-//g'`
+echo "###################### \$1 $1 , \$4 $4 , \$6 $6 "
+            SST_DIST_CUDA=`echo $4 | sed 's/cuda-//g'`
 echo "######################  SST_DIST_CUDA= $SST_DIST_CUDA"
 
             # Configure MPI, Boost, and Compiler (Linux only)
