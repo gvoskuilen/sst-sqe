@@ -3302,7 +3302,10 @@ else
             SST_DIST_PARAM4=$4
             SST_DIST_CUDA=`echo $5 | sed 's/cuda-//g'`
 
-            # Configure MPI, Boost, and Compiler (Linux only)
+echo "\$5 = $5   	SST_DIST_CODA = $SST_DIST_CODA"
+exit  
+
+           # Configure MPI, Boost, and Compiler (Linux only)
             if [ $kernel != "Darwin" ]
             then
                 linuxSetBoostMPI $1 $2 $3 $4
