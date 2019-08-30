@@ -1564,7 +1564,7 @@ ls $MPIHOME
        else
            ModuleEx load metis/metis-5.1.0
        fi
-       echo "      This is what is loaded for METIS"
+       echo "      This is what is loaded for METIS" ; echo "JOHN $LINENO"
        ModuleEx list | grep metis
 
        # Other misc
@@ -3311,8 +3311,7 @@ else
 
                 darwinSetBoostMPI $1 $2 $3 $4
             fi
-
-            # Load Cuda Module
+echo "JOHN \$5 is %5   $LINENO"
             case $5 in
                cuda-8.0.44|cuda-8.0.61|cuda-9.1.85)
                   echo "bamboo.sh: cuda-${SST_DIST_CUDA} selected"
@@ -3339,7 +3338,7 @@ else
             # if `pin module is available, use 2.14.
                 if [ $kernel != "Darwin" ] ; then
 
-                   echo "using Intel PIN environment module  pin-2.14-71313-gcc.4.4.7-linux"
+                   echo "using Intel PIN environment module  pin-2.14-71313-gcc.4.4.7-linux": echo "JOHN $LINENO"
                     #    Compiler is $4
                    if [[ "$4" != gcc-5* ]] ; then
                        echo "Loading Intel PIN environment module"
