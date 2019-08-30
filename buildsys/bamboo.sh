@@ -3311,7 +3311,7 @@ else
 
                 darwinSetBoostMPI $1 $2 $3 $4
             fi
-echo "JOHN \$5 is %5   $LINENO"
+echo "JOHN \$5 is $5   $LINENO"
             case $5 in
                cuda-8.0.44|cuda-8.0.61|cuda-9.1.85)
                   echo "bamboo.sh: cuda-${SST_DIST_CUDA} selected"
