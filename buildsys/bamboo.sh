@@ -3442,6 +3442,8 @@ then
                 echo " ################################################################"
                 echo " #"
                 echo " #         ENTERING dotests  "
+which nvcc
+find $SST_BASE -name nvcc
                 echo " #"
                 echo " ################################################################"
                 dotests $1 $4
