@@ -38,7 +38,7 @@ L_TESTFILE=()  # Empty list, used to hold test file names
 #-------------------------------------------------------------------------------
 export LOADFILE="qos.load"
 export PYTHONPATH="../test"
-pushd  {SST_REFERENCE_ELEMENTS}/ember/tests
+pushd  ${SST_REFERENCE_ELEMENTS}/ember/tests
 
 qos_Template() {
 qos_case=$1
@@ -47,7 +47,6 @@ qos_case=$1
     # files. XML postprocessing requires this.
     testDataFileBase="test_qos_${qos_case}"
     outFile="${SST_TEST_OUTPUTS}/${testDataFileBase}.out"
-    tmpFile="${SST_TEST_OUTPUTS}/${testDataFileBase}.tmp"
     referenceFile="${SST_REFERENCE_ELEMENTS}/ember/tests/refFiles/${testDataFileBase}.out"
     # Add basename to list for XML processing later
     L_TESTFILE+=(${testDataFileBase})
@@ -55,12 +54,17 @@ qos_case=$1
     LOADFILE="qos.load"
     # Define Software Under Test (SUT) and its runtime arguments
     sut="${SST_TEST_INSTALL_BIN}/sst"
-    sutArgs="${SST_ROOT}/sst-elements/src/sst/elements/ember/tests/test_qos_${qos_case}.sh"
+    ls ${SST_ROOT}/sst-elements/src/sst/elements/
+    ls ${SST_ROOT}/sst-elements/src/sst/elements/ember/
+    ls ${SST_ROOT}/sst-elements/src/sst/elements/ember/tests/
+    sutArgs="${SST_ROOT}/sst-elements/src/sst/elements/ember/tests/qos-${qos_case}.sh"
+echo "DB $LINENO sutArgs = $sutArgs"
 
     if [ -f ${sut} ] && [ -x ${sut} ]
     then
         # Run SUT
         ${sut} ${sutArgs} > $outFile
+
         RetVal=$? 
         TIME_FLAG=$SSTTESTTEMPFILES/TimeFlag_$$_${__timerChild} 
         if [ -e $TIME_FLAG ] ; then 
