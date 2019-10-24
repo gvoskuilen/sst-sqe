@@ -57,13 +57,25 @@ qos_case=$1
     ls ${SST_ROOT}/sst-elements/src/sst/elements/
     ls ${SST_ROOT}/sst-elements/src/sst/elements/ember/
     ls ${SST_ROOT}/sst-elements/src/sst/elements/ember/tests/
-    sutArgs="${SST_ROOT}/sst-elements/src/sst/elements/ember/tests/qos-${qos_case}.sh"
-echo "DB $LINENO sutArgs = $sutArgs"
+     qostest="${SST_ROOT}/sst-elements/src/sst/elements/ember/tests/qos-${qos_case}.sh"
+echo "DB $LINENO qostest = $qostest"
+
+    echo sst \\ > thetest
+    sed -n /'--'/p $qostest >> thetest
+    echo '" \ 
+../test/emberLoad.py' >> thetest
+
+echo "     thetest:"
+cat thetest
+echo "     ------"    
+    chmod +x thetest 
+ls -l ../test/emberLoad.py
+
 
     if [ -f ${sut} ] && [ -x ${sut} ]
     then
         # Run SUT
-        ${sut} ${sutArgs} > $outFile
+        thetest > $outFile
 
         RetVal=$? 
         TIME_FLAG=$SSTTESTTEMPFILES/TimeFlag_$$_${__timerChild} 
@@ -76,6 +88,9 @@ echo "DB $LINENO sutArgs = $sutArgs"
         then
              echo ' '; echo WARNING: sst did not finish normally ; echo ' '
              ls -l ${sut}
+ 
+exit 
+
              fail " WARNING: sst did not finish normally, RetVal=$RetVal"
              wc $referenceFile $outFile
              return
