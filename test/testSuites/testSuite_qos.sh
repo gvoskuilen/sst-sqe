@@ -76,7 +76,7 @@ ls -l ../test/emberLoad.py
     then
 ls -l thetest
         # Run SUT
-        thetest > $outFile
+        ./thetest > $outFile
 
         RetVal=$? 
         TIME_FLAG=$SSTTESTTEMPFILES/TimeFlag_$$_${__timerChild} 
