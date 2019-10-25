@@ -74,6 +74,7 @@ ls -l ../test/emberLoad.py
 
     if [ -f ${sut} ] && [ -x ${sut} ]
     then
+ls -l thetest
         # Run SUT
         thetest > $outFile
 
