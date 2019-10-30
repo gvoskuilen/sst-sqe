@@ -38,12 +38,14 @@ L_TESTFILE=()  # Empty list, used to hold test file names
 #-------------------------------------------------------------------------------
 export LOADFILE="qos.load"
 export PYTHONPATH="../test"
-pushd  ${SST_REFERENCE_ELEMENTS}/ember/tests
+## pushd  ${SST_REFERENCE_ELEMENTS}/ember/tests
 Match="lineWordCt"
 
 qos_Template() {
 qos_case=$1
 
+    startSeconds=`date +%s`
+     pushd  ${SST_REFERENCE_ELEMENTS}/ember/tests
     # Define a common basename for test output and reference
     # files. XML postprocessing requires this.
     testDataFileBase="test_qos-${qos_case}"
@@ -68,6 +70,7 @@ echo "DB $LINENO qostest = $qostest"
 echo "     thetest:"
 cat thetest
 echo "     ------"    
+echo "line $LINENO  `pwd`"
     chmod +x thetest 
 ls -l ../test/emberLoad.py
 
@@ -89,30 +92,73 @@ ls -l thetest
         then
              echo ' '; echo WARNING: sst did not finish normally ; echo ' '
              ls -l ${sut}
- 
-# exit 
-
              fail " WARNING: sst did not finish normally, RetVal=$RetVal"
              wc $referenceFile $outFile
              return
         fi
         myWC $outFile $referenceFile
 
-        diff ${referenceFile} ${outFile}
-        if [ $? -ne 0 ]
-        then
-            echo ' '; echo MATCH FAILED; echo ' '
-#           fail " MATCH FAILED"
-        fi        
-    else
-        # Problem encountered: can't find or can't run SUT (doesn't
-        # really do anything in Phase I)
-        ls -l ${sut}
-        fail "Problem with SUT: ${sut}"
-    fi
-    tail -1 $outFile
+    myWC ${outFile} ${referenceFile}
 
+    pushd ${SSTTESTTEMPFILES}
+
+    diff -b $referenceFile $outFile > ${SSTTESTTEMPFILES}/_raw_diff
+    if [ $? == 0 ] ; then
+         echo "PASS:  Exact match $qos_case"
+         rm ${SSTTESTTEMPFILES}/_raw_diff
+    else
+         myWC $referenceFile $outFile ${SSTTESTTEMPFILES}/_raw_diff
+         rm diff_sorted
+         compare_sorted $referenceFile $outFile
+         if [ $? == 0 ] ; then
+             echo "PASS:  Sorted match $qos_case"
+             rm ${SSTTESTTEMPFILES}/_raw_diff
+         else
+             ref=`wc ${referenceFile} | awk '{print $1, $2}'`;
+             new=`wc ${outFile}       | awk '{print $1, $2}'`;
+             if [ "$ref" != "$new" ] ; then
+                 echo "$qos_case test Fails"
+                 echo "   tail of $outFile  ---- "
+                 tail $outFile
+                 fail "outFile word/line count does NOT match Reference"
+                 diff ${referenceFile} ${outFile}
+             else
+                 if [ "lineWordCt" == "$Match" ] ; then
+       ## Aug 22, 2017   Match is never available
+                     echo "PASS: word/line count match $qos_case"
+                 else
+                  fail "output does not match Reference"
+
+                   echo "   ---- Here is the sorted diff ---"
+                   cat ${SSTTESTTEMPFILES}/diff_sorted 
+
+
+                 fi
+             fi
+         fi
+    fi
+echo "line $LINENO  `pwd`"
+    popd
+echo "line $LINENO  `pwd`"
+    popd
+echo "line $LINENO  `pwd`"
+
+    grep "Simulation is complete, simulated time:" $outFile
+    if [ $? != 0 ] ; then 
+        fail "Completion test message not found"
+        echo ' '; grep -i complet $outFile ; echo ' '
+    fi
+  
+    endSeconds=`date +%s`
+    echo " "
+    elapsedSeconds=$(($endSeconds -$startSeconds))
+    echo "${qos_case}: Wall Clock Time  $elapsedSeconds seconds"
+
+echo "This is the end of the Template"
+   fi
 }
+
+echo "this is in the code just after the templat"
 
 test_qos_dragonfly() {
 qos_Template dragonfly
@@ -126,9 +172,7 @@ test_qos_hyperx() {
 qos_Template hyperx 
 }
 
-
 export SHUNIT_OUTPUTDIR=$SST_TEST_RESULTS
-
 
 # Invoke shunit2. Any function in this file whose name starts with
 # "test"  will be automatically executed.
