@@ -124,7 +124,6 @@ ls -l thetest
                  diff ${referenceFile} ${outFile}
              else
                  if [ "lineWordCt" == "$Match" ] ; then
-       ## Aug 22, 2017   Match is never available
                      echo "PASS: word/line count match $qos_case"
                  else
                   fail "output does not match Reference"
@@ -140,8 +139,6 @@ ls -l thetest
 echo "line $LINENO  `pwd`"
     popd
 echo "line $LINENO  `pwd`"
-    popd
-echo "line $LINENO  `pwd`"
 
     grep "Simulation is complete, simulated time:" $outFile
     if [ $? != 0 ] ; then 
@@ -154,11 +151,9 @@ echo "line $LINENO  `pwd`"
     elapsedSeconds=$(($endSeconds -$startSeconds))
     echo "${qos_case}: Wall Clock Time  $elapsedSeconds seconds"
 
-echo "This is the end of the Template"
+# echo "This is the end of the Template"
    fi
 }
-
-echo "this is in the code just after the templat"
 
 test_qos_dragonfly() {
 qos_Template dragonfly
