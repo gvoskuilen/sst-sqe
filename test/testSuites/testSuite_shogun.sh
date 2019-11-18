@@ -1,15 +1,11 @@
 # !/bin/bash
-# testSuite_simpleStatisticsComponent.sh
+# testSuite_shogun.sh
 
 # Description:
 
 # A shell script that defines a shunit2 test suite. This will be
 # invoked by the Bamboo script.
 
-# Preconditions:
-
-# 1) The SUT (software under test) must have built successfully.
-# 2) A test success reference file is available.
 
 TEST_SUITE_ROOT="$( cd -P "$( dirname "$0" )" && pwd )"
 # Load test definitions
@@ -19,10 +15,10 @@ TEST_SUITE_ROOT="$( cd -P "$( dirname "$0" )" && pwd )"
 #===============================================================================
 # Variables global to functions in this suite
 #===============================================================================
-L_SUITENAME="SST_simpleStatisticsComponent_suite" # Name of this test suite; will be used to
-                                                  # identify this suite in XML file. This
-                                                  # should be a single string, no spaces
-                                                  # please.
+L_SUITENAME="SST_shogun_suite" # Name of this test suite; will be used to
+                                           # identify this suite in XML file. This
+                                           # should be a single string, no spaces
+                                           # please.
 
 L_BUILDTYPE=$1 # Build type, passed in from bamboo.sh as a convenience
                # value. If you run this script from the command line,
@@ -39,40 +35,36 @@ L_TESTFILE=()  # Empty list, used to hold test file names
 
 #-------------------------------------------------------------------------------
 # Test:
-#     test_simpleStatisticsComponent
-# Purpose:
-#     Exercise the simpleStatisticsComponent of the simpleElementExample
-# Inputs:
-#     None
-# Outputs:
-#     test_simpleStatisticsComponent.out file
-# Expected Results
-#     Match of output file against reference file
-# Caveats:
-#     The output files must match the reference file *exactly*,
-#     requiring that the command lines for creating both the output
-#     file and the reference file be exactly the same.
+#     test_shoguns
 #-------------------------------------------------------------------------------
-test_simpleStatisticsComponent() {
+shogun_Template() {
+shogun_case=$1
 
-    startSeconds=`date +%s`
     # Define a common basename for test output and reference
     # files. XML postprocessing requires this.
-    testDataFileBase="test_simpleStatisticsComponent"
+    testDataFileBase="test_shogun_${shogun_case}"
     outFile="${SST_TEST_OUTPUTS}/${testDataFileBase}.out"
-    referenceFile="${SST_REFERENCE_ELEMENTS}/simpleElementExample/tests/refFiles/${testDataFileBase}.out"
+    testOutFiles="${SST_TEST_OUTPUTS}/${testDataFileBase}.testFile"
+    tmpFile="${SST_TEST_OUTPUTS}/${testDataFileBase}.tmp"
+    referenceFile="${SST_REFERENCE_ELEMENTS}/shogun/tests/refFiles/${testDataFileBase}.out"
     # Add basename to list for XML processing later
     L_TESTFILE+=(${testDataFileBase})
 
     # Define Software Under Test (SUT) and its runtime arguments
     sut="${SST_TEST_INSTALL_BIN}/sst"
-    sutArgs="${SST_ROOT}/sst-elements/src/sst/elements/simpleElementExample/tests/test_simpleStatisticsComponent.py"
+    sutArgs="${SST_ROOT}/sst-elements/src/sst/elements/shogun/tests/${shogun_case}.py"
 
     if [ -f ${sut} ] && [ -x ${sut} ]
     then
         # Run SUT
-        (${sut} ${sutArgs} > $outFile)
-        RetVal=$? 
+        if [[ ${SST_MULTI_RANK_COUNT:+isSet} == isSet ]] && [ ${SST_MULTI_RANK_COUNT} -gt 1 ] ; then
+           mpirun -np ${SST_MULTI_RANK_COUNT} $NUMA_PARAM -output-filename $testOutFiles ${sut} ${sutArgs}
+           RetVal=$? 
+           cat ${testOutFiles}* > $outFile
+        else
+           ${sut} ${sutArgs} > $outFile
+           RetVal=$? 
+        fi
         TIME_FLAG=$SSTTESTTEMPFILES/TimeFlag_$$_${__timerChild} 
         if [ -e $TIME_FLAG ] ; then 
              echo " Time Limit detected at `cat $TIME_FLAG` seconds" 
@@ -84,35 +76,55 @@ test_simpleStatisticsComponent() {
         then
              echo ' '; echo WARNING: sst did not finish normally ; echo ' '
              ls -l ${sut}
-             fail "WARNING: sst did not finish normally, RetVal=$RetVal"
-             RemoveComponentWarning
+             fail " WARNING: sst did not finish normally, RetVal=$RetVal"
+             wc $referenceFile $outFile
              return
         fi
-wc $referenceFile $outFile
+        wc $outFile 
         RemoveComponentWarning
-        wc $referenceFile $outFile
-        diff -b $referenceFile $outFile
-        if [ $? != 0 ]
-        then  
-             fail " Reference does not Match Output"
+        myWC $outFile $referenceFile
+
+        diff ${referenceFile} ${outFile} > $tmpFile
+        if [ $? -ne 0 ]
+        then
+            wc $tmpFile
+           compare_sorted $referenceFile $outFile
+           if [ $? == 0 ] ; then
+              echo " Sorted match with Reference File"
+              rm $tmpFile
+              return
+           else
+              cat  ${SSTTESTTEMPFILES}/diff_sorted
+              echo ' '
+              fail " Reference does not Match Output"
+              diff -b $referenceFile $outFile
+           fi
+        else
+           echo "Exact match with Reference File"
+           return
         fi
+echo  "----"
+
     else
         # Problem encountered: can't find or can't run SUT (doesn't
         # really do anything in Phase I)
         ls -l ${sut}
         fail "Problem with SUT: ${sut}"
     fi
-    endSeconds=`date +%s`
-    echo " "
-    elapsedSeconds=$(($endSeconds -$startSeconds))
-    echo "${testDataFileBase}: Wall Clock Time  $elapsedSeconds seconds"
+    tail -1 $outFile
+
+}
+
+test_shogun_basic_miranda() {
+shogun_Template basic_miranda
+}
+
+test_shogun_hierarchy_test() {
+shogun_Template hierarchy_test
 }
 
 
 export SHUNIT_OUTPUTDIR=$SST_TEST_RESULTS
-
-mkdir $SSTTESTTEMPFILES/$$simpleStat
-cd $SSTTESTTEMPFILES/$$simpleStat
 
 
 # Invoke shunit2. Any function in this file whose name starts with

@@ -116,6 +116,8 @@ echo "   "
          echo ' '; echo WARNING: sst did not finish normally ; echo ' '
          ls -l ${sut}
          fail "WARNING: sst did not finish normally, RetVal=$RetVal"
+	 date
+	 top -bH -n 1 | grep Thread
          myWC $outFile
          echo " 20 line tail of \$outFile"
          tail -20 $outFile
@@ -379,6 +381,11 @@ test_memHA_BackendTimingDRAM_4 () {
 
 test_memHA_BackendHBMDramsim () {
 
+    if [[ ${SST_MULTI_THREAD_COUNT:+isSet} == isSet ]] && [ ${SST_MULTI_THREAD_COUNT} -gt 1 ] ; then
+       echo "It appears that multi-thread can fail due to DramSim's use of static variables     OMIT"    
+       skip_this_test
+       return
+    fi
     memHA_Template BackendHBMDramsim "M"
 }
 
@@ -386,6 +393,10 @@ test_memHA_BackendHBMPagedMulti () {
     memHA_Template BackendHBMPagedMulti "M"
 }
 
+test_memHA_MemoryCache () {
+    memHA_Template MemoryCache  "M"
+} 
+    
 test_memHA_Kingsley () {
     memHA_Template Kingsley  "M"
 } 
