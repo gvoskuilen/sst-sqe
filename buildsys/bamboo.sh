@@ -728,6 +728,8 @@ echo " #####################################################"
         invokeSuite merlin  2 2 dragon_128 autotest_multirank_plus_multithread
         invokeSuite CramSim 2 2 4_         autotest_multirank_plus_multithread
         invokeSuite memHA   2 2 Distrib    autotest_multirank_plus_multithread
+        invokeSuite memHA   2 2 Flushes_2  autotest_multirank_plus_multithread
+        invokeSuite memHA   2 2 Noninclusive_2  autotest_multirank_plus_multithread
     fi
 
     if [ $1 == "sstmainline_config_develautotester_mac" ] ; then
@@ -736,6 +738,8 @@ echo " #####################################################"
         invokeSuite merlin  2 2 dragon_128 autotest_multirank_plus_multithread
         invokeSuite CramSim 2 2 4_         autotest_multirank_plus_multithread
         invokeSuite memHA   2 2 Distrib    autotest_multirank_plus_multithread
+        invokeSuite memHA   2 2 Flushes_2  autotest_multirank_plus_multithread
+        invokeSuite memHA   2 2 Noninclusive_2  autotest_multirank_plus_multithread
     fi
 
     ${SST_TEST_SUITES}/testSuite_Ariel.sh
