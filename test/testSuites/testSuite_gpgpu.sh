@@ -48,13 +48,15 @@ L_TESTFILE=()  # Empty list, used to hold test file names
 #          This could be in subroutine library - for now only Ariel
 removeFreeIPCs() {
     #   Find and kill orphanned running binaries
+echo " "; echo "line  $LINENO"; echo " "
     ps -f > ${SSTTESTTEMPFILES}/_running_bin
     while read -u 3 uid pid ppid p4 p5 p6 p7 cmd
     do
-##        echo "          DEBUG ONLY $uid $pid $ppid $cmd"
+        echo "          DEBUG ONLY $uid $pid $ppid $cmd"
         if [ $uid == $USER ] && [ ${ppid} == 1 ] ; then
-           if [[ $cmd == *stream/stream* ]] || [[ $cmd == *ompmybarrier* ]] ; then
-               echo "Going to kill: $cmd"
+           if [[ $cmd == *stream/stream* ]] || [[ $cmd == *ompmybarrier* ]] ||
+              [[ $cmd  == *vectorAdd/vectorAdd* ]] ; then
+               echo "Going to kill: $cmd"       " \$pid is $pid" 
                kill -9 $pid
            else
                echo " Omitting kill of $uid $ppid $cmd"
@@ -76,7 +78,9 @@ removeFreeIPCs() {
           ipcrm -m $shmid
        fi
     done 3<${SSTTESTTEMPFILES}/_ipc_list
+echo " "; echo "line  $LINENO"; echo " "
     rm ${SSTTESTTEMPFILES}/_ipc_list  ${SSTTESTTEMPFILES}/_running_bin
+echo " "; echo "line  $LINENO"; echo " "
 }
 
 #===============================================================================
@@ -130,7 +134,7 @@ GPGPU_template() {
     # Setup GPGPUSim environment
     # Sourcing from within a function inheirits function arguments so need seperate call
     GPGPU_environment
-
+echo " "; echo "line  $LINENO"; echo " "
     # Copy relevant test files
     echo -e "Copying configuration files from ${SST_ROOT}/sst-elements/src/sst/elements/balar/tests \n"
     cp -r ${SST_ROOT}/sst-elements/src/sst/elements/balar/tests/* .
@@ -138,12 +142,14 @@ GPGPU_template() {
 
     # Build target application
     echo "Building application $1"
+echo " "; echo "line  $LINENO"; echo " "
     pushd vectorAdd
 
     if [ "$SST_TEST_HOST_OS_KERNEL" == "Darwin" ] ; then
        echo "  ### MacOS remove \"-fopenMP\" from the make "
        sed -i'.x' 's/-fopenmp//' Makefile
     fi
+echo " "; echo "line  $LINENO"; echo " "
 
     make
     retval=$?
@@ -155,6 +161,7 @@ GPGPU_template() {
         echo "ERROR: tests/vecAdd: make failure"
         export SHUNIT_OUTPUTDIR=$SST_TEST_RESULTS
         preFail "ERROR: tests/vecAdd: make failure" "skip"
+echo " "; echo "line  $LINENO"; echo " "
     fi
 
     popd
@@ -166,14 +173,20 @@ GPGPU_template() {
     Tol=1            ##  Set tolerance at 0.1%
     rm -f ${outFile}
     rm -f ${statsFile}
+echo " "; echo "line  $LINENO"; echo " "
 
     if [ -f ${sut} ] && [ -x ${sut} ]
     then
+echo " "; echo "line  $LINENO"; echo " "
         # Run SUT
         echo "Running:"
         echo "${sut} --model-options=\"-c ariel-gpu-v100.cfg -s ${statsFile}\" ${sutArgs}"
         ${sut} --model-options="-c ariel-gpu-v100.cfg -s ${statsFile}" ${sutArgs} > $outFile
         RetVal=$?
+wc $outFile
+echo " "; echo "line  $LINENO"; echo " "
+
+
         TIME_FLAG=$SSTTESTTEMPFILES/TimeFlag_$$_${__timerChild}
         if [ -e $TIME_FLAG ] ; then
              echo " Time Limit detected at `cat $TIME_FLAG` seconds"
@@ -183,13 +196,16 @@ GPGPU_template() {
              return
         fi
 
+echo " "; echo "line  $LINENO"; echo " "
         if [ $RetVal != 0 ]
         then
+echo " "; echo "line  $LINENO"; echo " "
              echo ' '; echo WARNING: sst did not finish normally, RetVal= $RetVal ; echo ' '
              fail "WARNING: sst did not finish normally, RetVal=$RetVal"
              removeFreeIPCs
              return
         fi
+echo " "; echo "line  $LINENO"; echo " "
 
         # Fix-up multirank
         if [[ $SST_MULTI_RANK_COUNT -gt 1 ]]
@@ -201,18 +217,21 @@ GPGPU_template() {
                   cat ${SST_TEST_OUTPUTS}/${testDataFileBase}_${rankNum}.out >> $statsFile
             done
         fi
+echo " "; echo "line  $LINENO"; echo " "
 
         wc ${statsFile} ${referenceFile}
         RemoveComponentWarning
 
         echo " "
+echo " "; echo "line  $LINENO"; echo " "
 
         grep FATAL ${statsFile}
+
         if [ $? == 0 ] ; then
             fail "Fatal error detected"
             return
         fi
-
+echo " "; echo "line  $LINENO"; echo " "
         lref=`wc ${referenceFile}   | awk '{print $1 }'`;
         lout=`wc ${statsFile}       | awk '{print $1 }'`;
         line_diff=$(( $lref - $lout ));
@@ -228,13 +247,16 @@ GPGPU_template() {
         else
              echo "Output file within $line_diff lines of Reference File"
         fi
+echo " "; echo "line  $LINENO"; echo " "
     else
+echo " "; echo "line  $LINENO"; echo " "
         # Problem encountered: can't find or can't run SUT (doesn't
         # really do anything in Phase I)
         ls -l ${sut}
         fail "Problem with SUT: ${sut}"
     fi
 
+echo " "; echo "line  $LINENO"; echo " "
     cd $saveDir
 
     endSeconds=`date +%s`
@@ -267,11 +289,14 @@ cd $OPWD
 # Invoke shunit2. Any function in this file whose name starts with
   export SST_TEST_ONE_TEST_TIMEOUT=600
 # "test"  will be automatically executed.
+echo " "; echo "line  $LINENO"; echo " "
+echo "      Go to shunit2 -------------------- "
 (. ${SHUNIT2_SRC}/shunit2)
-
+echo " "; echo "line  $LINENO"; echo " "
 echo " Test ENV VAR  $SST_TEST_HOST_OS_KERNEL"
     if [ "$SST_TEST_HOST_OS_KERNEL" == "Darwin" ] ; then
 
 echo " Call to countStreams \"Delete\"follows: "
          countStreams "Delete"
     fi
+echo " "; echo "line  $LINENO"; echo " "
