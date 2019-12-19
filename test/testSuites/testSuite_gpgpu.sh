@@ -61,6 +61,8 @@ echo " "; echo "line  $LINENO"; echo " "
            else
                echo " Omitting kill of $uid $ppid $cmd"
            fi
+        else
+             echo "NOT HERE  $uid $USER    PPID = $ppid ============================"
         fi
     done 3<${SSTTESTTEMPFILES}/_running_bin
 
