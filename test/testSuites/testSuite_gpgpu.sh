@@ -48,6 +48,8 @@ L_TESTFILE=()  # Empty list, used to hold test file names
 #          This could be in subroutine library - for now only Ariel
 removeFreeIPCs() {
     #   Find and kill orphanned running binaries
+echo ' '
+echo "      ###### Entering removeFree IPc   #######"
     _USERX=$USER
     if [[ $USER == "sstbuilder" ]] ; then
 echo " "; echo "line  $LINENO"; echo " "
@@ -56,6 +58,9 @@ echo " "; echo "line  $LINENO"; echo " "
 echo " "; echo "line  $LINENO"; echo "                          \$USER $USER -> _$USERX"
         echo " $LINENO         DEBUG ONLY $uid $pid $ppid $cmd \$_USERX = $_USERX"
     ps -f > ${SSTTESTTEMPFILES}/_running_bin
+echo ' '
+ps -ef | grep vectorA
+echo ' '
     while read -u 3 uid pid ppid p4 p5 p6 p7 cmd
     do
         echo "          DEBUG ONLY $uid $pid $ppid $cmd \$_USERX = $_USERX"
