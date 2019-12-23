@@ -48,12 +48,18 @@ L_TESTFILE=()  # Empty list, used to hold test file names
 #          This could be in subroutine library - for now only Ariel
 removeFreeIPCs() {
     #   Find and kill orphanned running binaries
+    _USERX=$USER
+    if [[ $USER == "sstbuilder" ]] ; then
 echo " "; echo "line  $LINENO"; echo " "
+          _USERX="sstbuil+"
+    fi
+echo " "; echo "line  $LINENO"; echo "                          \$USER $USER -> _$USERX"
+        echo " $LINENO         DEBUG ONLY $uid $pid $ppid $cmd \$_USERX = $_USERX"
     ps -f > ${SSTTESTTEMPFILES}/_running_bin
     while read -u 3 uid pid ppid p4 p5 p6 p7 cmd
     do
-        echo "          DEBUG ONLY $uid $pid $ppid $cmd"
-        if [ $uid == $USER ] && [ ${ppid} == 1 ] ; then
+        echo "          DEBUG ONLY $uid $pid $ppid $cmd \$_USERX = $_USERX"
+        if [[ $uid == $_USERX ]] && [ ${ppid} == 1 ] ; then
            if [[ $cmd == *stream/stream* ]] || [[ $cmd == *ompmybarrier* ]] ||
               [[ $cmd  == *vectorAdd/vectorAdd* ]] ; then
                echo "Going to kill: $cmd"       " \$pid is $pid" 
@@ -62,7 +68,7 @@ echo " "; echo "line  $LINENO"; echo " "
                echo " Omitting kill of $uid $ppid $cmd"
            fi
         else
-             echo "NOT HERE  $uid $USER    PPID = $ppid ============================"
+             echo "NOT HERE  $uid $_USERX    PPID = $ppid ============================"
         fi
     done 3<${SSTTESTTEMPFILES}/_running_bin
 
@@ -75,7 +81,7 @@ echo " "; echo "line  $LINENO"; echo " "
              continue
          fi
     ##     echo "         DEBUG ONLY $key, $shmid, $own, $n_att"
-       if [ $own == $USER ] && [ $n_att == 0 ] ; then
+       if [[ $own == $_USERX ]] && [ $n_att == 0 ] ; then
           echo " Removing an idle Shared Mem allocation"
           ipcrm -m $shmid
        fi
