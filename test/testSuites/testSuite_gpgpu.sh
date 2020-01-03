@@ -57,7 +57,7 @@ echo " "; echo "line  $LINENO"; echo " "
     fi
 echo " "; echo "line  $LINENO"; echo "                          \$USER $USER -> _$USERX"
         echo " $LINENO         DEBUG ONLY $uid $pid $ppid $cmd \$_USERX = $_USERX"
-    ps -f > ${SSTTESTTEMPFILES}/_running_bin
+    ps -ef > ${SSTTESTTEMPFILES}/_running_bin
 echo ' '
 ps -ef | grep vectorA
 echo ' '
