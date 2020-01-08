@@ -203,9 +203,9 @@ echo " "; echo "line  $LINENO"; echo " "
         TIME_FLAG=$SSTTESTTEMPFILES/TimeFlag_$$_${__timerChild}
         if [ -e $TIME_FLAG ] ; then
              echo " Time Limit detected at `cat $TIME_FLAG` seconds"
+             removeFreeIPCs
              fail " Time Limit detected at `cat $TIME_FLAG` seconds"
              rm $TIME_FLAG
-             removeFreeIPCs
              return
         fi
 
@@ -214,6 +214,7 @@ echo " "; echo "line  $LINENO"; echo " "
         then
 echo " "; echo "line  $LINENO"; echo " "
              echo ' '; echo WARNING: sst did not finish normally, RetVal= $RetVal ; echo ' '
+             removeFreeIPCs
              fail "WARNING: sst did not finish normally, RetVal=$RetVal"
              removeFreeIPCs
              return
