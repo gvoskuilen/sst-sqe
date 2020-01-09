@@ -60,6 +60,9 @@ ps -ef | grep vectorA
 echo ' '
     while read -u 3 uid pid ppid p4 p5 p6 p7 cmd
     do
+        if [ $ppid == 2 ] ; then
+             continue
+        fi
         if [[ $uid == $_USERX ]] && [ ${ppid} == 1 ] ; then
            if [[ $cmd == *stream/stream* ]] || [[ $cmd == *ompmybarrier* ]] ||
               [[ $cmd  == *vectorAdd/vectorAdd* ]] ; then
