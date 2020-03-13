@@ -222,6 +222,11 @@ test_zoltan_2()
         echo " skipping Zoltan on Ubuntu-18.04"
         return
     fi
+    if [[ `uname -n` == ubuntu2004* ]] ; then
+        skip_this_test
+        echo " skipping Zoltan on Ubuntu-20.04"
+        return
+    fi
 
    zoltan_template 2
 }
@@ -233,7 +238,13 @@ test_zoltan_4()
         echo " skipping Zoltan on Ubuntu-18.04"
         return
     fi
-   zoltan_template 4
+    if [[ `uname -n` == ubuntu2004* ]] ; then
+        skip_this_test
+        echo " skipping Zoltan on Ubuntu-20.04"
+        return
+    fi
+
+    zoltan_template 4
 }
 
 xxtest_zoltan_8()   ##  nEVER lIVE!!
