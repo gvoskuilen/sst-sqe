@@ -3392,43 +3392,37 @@ else
        if [[  ${SST_WITHOUT_PIN:+isSet} == isSet ]] ; then
             echo "  This run is forced to be without PIN "
        else
-            # if Intel PIN module is available, load 2.14 version
-            #           ModuleEx puts the avail output on Stdout (where it belongs.)
-            ModuleEx avail | egrep -q "pin/pin-2.14-71313"
+            ModuleEx avail | egrep -q "pin/pin-3"
             if [ $? == 0 ]
             then
-            # if `pin module is available, use 2.14.
-                if [ $kernel != "Darwin" ] ; then
-
-                   echo "using Intel PIN environment module  pin-2.14-71313-gcc.4.4.7-linux"
-                    #    Compiler is $4
-                   if [[ "$4" != gcc-5* ]] ; then
+    
+                ModuleEx avail | egrep -q "pin/pin-3.11-97998-g7ecce2dac-gcc-linux
+                if [ $? == 0 ]
+                then
+                # if `pin module is available, use 3.11.
+                    if [ $kernel != "Darwin" ] ; then
+    
+                        echo "Loading Intel PIN environment module"
+                        ModuleEx load pin/pin-3.11-97998-g7ecce2dac-gcc-linux
+                           ModuleEx load pin/pin-2.14-71313-gcc.4.4.7-linux
+                           echo  $INTEL_PIN_DIRECTORY
+                           ls $INTEL_PIN_DIRECTORY
+                       fi
+                    else        ##    MacOS   (Darwin)
+                       echo "using Intel PIN environment module  pin-2.14-71313-clang.5.1-mac"
                        echo "Loading Intel PIN environment module"
-                       ModuleEx load pin/pin-2.14-71313-gcc.4.4.7-linux
-                       echo  $INTEL_PIN_DIRECTORY
-                       ls $INTEL_PIN_DIRECTORY
-                   else
-                      echo " ################################################################"
-                      echo " #"
-                      echo " #  pin-2.14-71313-gcc.4.4.7-linux is incompatible with gcc-5.x"
-                      echo " #"
-                      echo " ################################################################"
-                   fi
-                else        ##    MacOS   (Darwin)
-                   echo "using Intel PIN environment module  pin-2.14-71313-clang.5.1-mac"
-                   echo "Loading Intel PIN environment module"
-                   ModuleEx load pin/pin-2.14-71313-clang.5.1-mac
+                       ModuleEx load pin/pin-2.14-71313-clang.5.1-mac
+                    fi
+                else
+                    echo "Intel PIN environment module not found on this host."
                 fi
-            else
-                echo "Intel PIN environment module not found on this host."
-            fi
-       fi
-
-            echo "bamboo.sh: LISTING LOADED MODULES"
-            ModuleEx list
-
+           fi
+    
+                echo "bamboo.sh: LISTING LOADED MODULES"
+                ModuleEx list
+            xi
             # Build type given as argument to this script
-            export SST_BUILD_TYPE=$1
+           export SST_BUILD_TYPE=$1
 
             if [ $SST_BUILD_TYPE = "documentation" ]
             then
@@ -3460,11 +3454,11 @@ else
                     fi
                     exit $retval
                 fi
-            fi
-
+            else
+     fi
     echo "PWD $LINENO = `pwd`"
             ;;
-
+          
         *)
             echo "$0 : unknown action \"$1\""
             retval=1
