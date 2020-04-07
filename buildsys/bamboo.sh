@@ -3388,17 +3388,19 @@ else
                   ;;
             esac
 
-
+echo "$LINENO  START "
        if [[  ${SST_WITHOUT_PIN:+isSet} == isSet ]] ; then
             echo "  This run is forced to be without PIN "
        else
             ModuleEx avail | egrep -q "pin/pin-3"
             if [ $? == 0 ]
             then
+echo "$LINENO  START 2"
     
                 ModuleEx avail | egrep -q "pin/pin-3.11-97998-g7ecce2dac-gcc-linux
                 if [ $? == 0 ]
                 then
+echo "$LINENO  START 3"
                 # if `pin module is available, use 3.11.
                     if [ $kernel != "Darwin" ] ; then
     
@@ -3408,6 +3410,7 @@ else
                            echo  $INTEL_PIN_DIRECTORY
                            ls $INTEL_PIN_DIRECTORY
                        fi
+echo "$LINENO  START 4"
                     else        ##    MacOS   (Darwin)
                        echo "using Intel PIN environment module  pin-2.14-71313-clang.5.1-mac"
                        echo "Loading Intel PIN environment module"
@@ -3416,17 +3419,21 @@ else
                 else
                     echo "Intel PIN environment module not found on this host."
                 fi
+echo "$LINENO  START 5"
            fi
+echo "$LINENO  START 6"
     
                 echo "bamboo.sh: LISTING LOADED MODULES"
                 ModuleEx list
 #  err?            xi
+echo "$LINENO  START 7"
             # Build type given as argument to this script
            export SST_BUILD_TYPE=$1
 
             if [ $SST_BUILD_TYPE = "documentation" ]
             then
                 # build sst-core documentation, create list of undocumented files
+echo "$LINENO  START 8"
                 echo "Building SST-CORE Doxygen Documentation"
                 pushd $SST_ROOT/sst-core
                 ./autogen.sh
@@ -3437,13 +3444,16 @@ else
                 retval=$?
                 if [ $retval -ne 0 ]
                 then
+echo "$LINENO  START 9"
                     echo "HTML directory not found! - Documentation build has failed"
                     exit 1
                 fi
                 popd
 
+echo "$LINENO  START 10"
             else
                 # Perform the build
+echo "$LINENO  START 11"
                 dobuild -t $SST_BUILD_TYPE -a $arch -k $kernel
                 retval=$?
                 if [[ ${SST_STOP_AFTER_BUILD:+isSet} == isSet ]] ; then
