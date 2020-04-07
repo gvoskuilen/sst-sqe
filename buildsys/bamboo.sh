@@ -3516,7 +3516,9 @@ then
     fi
 fi
 date
-
+#   add missing fi-------------------------------
+fi
+echo added lost fi
 if [ $retval -eq 0 ]
 then
     echo "$0 : exit success."
