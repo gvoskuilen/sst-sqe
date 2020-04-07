@@ -3420,7 +3420,7 @@ else
     
                 echo "bamboo.sh: LISTING LOADED MODULES"
                 ModuleEx list
-            xi
+#  err?            xi
             # Build type given as argument to this script
            export SST_BUILD_TYPE=$1
 
